@@ -1,9 +1,8 @@
+# DroneFlux: Production Drone Delivery Management System
 
-# DroneFlux: Drone Delivery Management System
+## 🚁 Production Overview
 
-## 🚁 Project Overview
-
-DroneFlux is an advanced web application for managing and monitoring drone delivery operations. Designed to provide real-time insights, tracking, and management of drone logistics.
+DroneFlux is a production-ready web application for managing and monitoring drone delivery operations. Built with MongoDB, React, and deployed on Vercel for scalable drone logistics management.
 
 ## 🌟 Features
 
@@ -31,9 +30,18 @@ DroneFlux is an advanced web application for managing and monitoring drone deliv
 - React Router
 - Recharts (for data visualization)
 
+### Backend
+- MongoDB (Database)
+- Node.js API Routes
+- JWT Authentication
+- Real-time data processing
+- Automated drone assignment
+- Order tracking system
+
 ### State Management
-- React Query (for data fetching and caching)
-- Context API for authentication
+- React Context for authentication
+- Custom API hooks for data fetching
+- Real-time updates
 
 ### UI/UX
 - Responsive design
@@ -46,11 +54,12 @@ DroneFlux is an advanced web application for managing and monitoring drone deliv
 ### Prerequisites
 - Node.js (v18+)
 - npm or yarn
+- MongoDB Atlas account or local MongoDB instance
 
 ### Setup Steps
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/yourusername/droneflux-system.git
 
 # Navigate to project directory
 cd droneflux-system
@@ -58,13 +67,35 @@ cd droneflux-system
 # Install dependencies
 npm install
 
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your MongoDB URI and other secrets
+
 # Start development server
 npm run dev
 ```
 
+### Environment Setup
+1. Create a MongoDB Atlas cluster or set up local MongoDB
+2. Copy `.env.example` to `.env.local`
+3. Fill in your MongoDB connection string and other environment variables
+4. Run the application
+
 ## 🔐 Authentication
 
-The application uses a secure authentication system with protected routes and role-based access control.
+The application uses JWT-based authentication with:
+- Secure password hashing (bcrypt)
+- Role-based access control
+- Protected API routes
+- Session management
+
+## 🗄️ Database Schema
+
+### Collections:
+- **users**: User accounts and profiles
+- **drones**: Drone fleet management
+- **orders**: Delivery orders and tracking
+- **assignments**: Drone-order assignments
 
 ## 📊 Key Components
 
@@ -86,7 +117,21 @@ Includes a robust theme system with:
 
 ## 🚀 Deployment
 
-Easily deployable on Vercel with zero-configuration setup.
+### Vercel Deployment
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard:
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `NEXTAUTH_SECRET`
+3. Deploy automatically on push to main branch
+
+### Environment Variables for Production
+```bash
+MONGODB_URI=mongodb+srv://...
+JWT_SECRET=your-secure-jwt-secret
+NEXTAUTH_SECRET=your-nextauth-secret
+VERCEL_URL=your-app.vercel.app
+```
 
 ## 🤝 Contributing
 
@@ -104,7 +149,16 @@ Easily deployable on Vercel with zero-configuration setup.
 ## 📞 Contact & Support
 
 For support, feature requests, or collaboration:
-- Email: support@droneflux.com
-- GitHub Issues: [Your Repository Issues Page]
+- Email: support@yourcompany.com
+- GitHub Issues: Create an issue in this repository
+
+## 🔧 API Documentation
+
+The application provides RESTful APIs for:
+- Authentication (`/api/auth/*`)
+- User management (`/api/users/*`)
+- Drone management (`/api/drones/*`)
+- Order management (`/api/orders/*`)
+- Real-time tracking (`/api/tracking/*`)
 
 ---

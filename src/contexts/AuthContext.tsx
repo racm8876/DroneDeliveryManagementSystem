@@ -2,8 +2,9 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { User, mockLogin } from "@/lib/data";
+import { User } from "@/lib/models/User";
 import { useToast } from "@/hooks/use-toast";
+import { apiClient } from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
@@ -21,28 +22,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check for stored user data on component mount
-    const storedUser = localStorage.getItem('droneflux-user');
-    if (storedUser) {
+    // Check for stored auth token on component mount
+    const token = localStorage.getItem('auth-token');
+    if (token) {
       try {
-        setUser(JSON.parse(storedUser));
+        apiClient.getCurrentUser().then(({ user }) => {
+          setUser(user);
+        }).catch(() => {
+          // Token is invalid, clear it
+          localStorage.removeItem('auth-token');
+          apiClient.clearToken();
+        }).finally(() => {
+          setIsLoading(false);
+        });
       } catch (error) {
-        console.error("Failed to parse stored user:", error);
-        localStorage.removeItem('droneflux-user');
+        console.error("Failed to get current user:", error);
+        localStorage.removeItem('auth-token');
+        apiClient.clearToken();
+        setIsLoading(false);
       }
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      // Use the mockLogin function from data.ts
-      const user = await mockLogin(email, password);
+      const { user, token } = await apiClient.login(email, password);
       
       if (user) {
+        apiClient.setToken(token);
         setUser(user);
-        localStorage.setItem('droneflux-user', JSON.stringify(user));
         toast({
           title: "Login successful",
           description: `Welcome back, ${user.name}!`,
@@ -71,23 +82,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signup = async (name: string, email: string, password: string) => {
     try {
       setIsLoading(true);
-      // In a real app, this would create a new user via an API
-      // For now, we'll simulate a successful signup by returning a mock user
-      const mockUser: User = {
-        id: Date.now().toString(),
+      const { user, token } = await apiClient.register({
         name,
         email,
-        role: "staff",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + email,
-      };
+        password,
+        role: "customer"
+      });
       
-      setUser(mockUser);
-      localStorage.setItem('droneflux-user', JSON.stringify(mockUser));
+      apiClient.setToken(token);
+      setUser(user);
       toast({
         title: "Signup successful",
         description: `Welcome, ${name}!`,
       });
-      return mockUser;
+      return user;
     } catch (error) {
       console.error("Signup error:", error);
       toast({
@@ -102,8 +110,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
+    apiClient.clearToken();
     setUser(null);
-    localStorage.removeItem('droneflux-user');
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
